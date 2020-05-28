@@ -19,10 +19,18 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageService.getPhotos { [weak self] images in
-            self?.images = images
-            self?.collectionView.reloadData()
-        }
+//        for i in 1...5 {
+            DispatchQueue.global().async { [weak self] in
+                for i in 1...5 {
+                self?.imageService.getPhotos(page: i) { [weak self] images in
+                    self?.images += images
+                    DispatchQueue.main.async {
+                        self?.collectionView.reloadData()
+                    }
+                }
+                }
+            }
+//        }
         
         navigationController?.setNavigationBarHidden(true, animated: false)
         
@@ -73,6 +81,43 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
         return images.count
     }
 
+    func resize(_ image: UIImage) -> UIImage {
+        var actualHeight = Float(image.size.height)
+        var actualWidth = Float(image.size.width)
+        let maxHeight: Float = 300.0
+        let maxWidth: Float = 400.0
+        var imgRatio: Float = actualWidth / actualHeight
+        let maxRatio: Float = maxWidth / maxHeight
+        let compressionQuality: Float = 0.5
+        //50 percent compression
+        if actualHeight > maxHeight || actualWidth > maxWidth {
+            if imgRatio < maxRatio {
+                //adjust width according to maxHeight
+                imgRatio = maxHeight / actualHeight
+                actualWidth = imgRatio * actualWidth
+                actualHeight = maxHeight
+            }
+            else if imgRatio > maxRatio {
+                //adjust height according to maxWidth
+                imgRatio = maxWidth / actualWidth
+                actualHeight = imgRatio * actualHeight
+                actualWidth = maxWidth
+            }
+            else {
+                actualHeight = maxHeight
+                actualWidth = maxWidth
+            }
+        }
+        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(actualWidth), height: CGFloat(actualHeight))
+        UIGraphicsBeginImageContext(rect.size)
+        image.draw(in: rect)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
+        UIGraphicsEndImageContext()
+        return UIImage(data: imageData!) ?? UIImage()
+    }
+    
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = UICollectionViewCell()
@@ -80,6 +125,25 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
         guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? MiniPhotoCell else {return cell}
         let imageLink = images[indexPath.row].url
         photoCell.photoImageView.kf.setImage(with: URL(string: imageLink))
+        
+        
+//        if let imageHigh = photoCell.photoImageView.image {
+//            let imageLow = imageHigh.jpegData(compressionQuality: 0.05)
+//            photoCell.photoImageView.image = UIImage(data: imageLow!)
+//        }
+        if let image = photoCell.photoImageView.image {
+            print(image.size)
+            photoCell.photoImageView.image = resize(image)
+            print(photoCell.photoImageView.image?.size)
+        }
+        
+//        if let imageHigh = photoCell.photoImageView.image, let imageLow = imageHigh.jpegData(compressionQuality: 0.3) {
+//            print(photoCell.photoImageView.image?.size)
+//            print("low")
+//            photoCell.photoImageView.image = UIImage(data: imageLow)
+//            print(photoCell.photoImageView.image?.size)
+//        }
+//        guard let imageRep = UIImageJPEGRepresentation(image, 0.3) else { return }
 //        cell.imagePhotoView.kf.setImage(with: URL(string: contentPhotoLink))
 //        photoCell.frame = CGRect(x: photoCell.frame.origin.x, y: photoCell.frame.origin.y, width: 80, height: 80)
         photoCell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0)
@@ -97,7 +161,7 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
 
        if let index = indexPath {
         let cell = self.collectionView.cellForItem(at: index) as! MiniPhotoCell
-        cell.cape.backgroundColor = UIColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 0.3)
+        cell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0.4)
 //        collectionView.reloadItems(at: [index])
             print(index.row)
             let alert = UIAlertController(title: "Удалить", message: "Вы уверены, что хотите удалить фотографию?", preferredStyle: .alert)
@@ -127,5 +191,23 @@ extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
         let widthCell = widthView / countPhotoInRow - Int(inserts) * 2
         
         return CGSize(width: widthCell, height: widthCell)
+    }
+}
+
+
+extension UIImage {
+    enum JPEGQuality: CGFloat {
+        case lowest  = 0
+        case low     = 0.25
+        case medium  = 0.5
+        case high    = 0.75
+        case highest = 1
+    }
+
+    /// Returns the data for the specified image in JPEG format.
+    /// If the image object’s underlying image data has been purged, calling this function forces that data to be reloaded into memory.
+    /// - returns: A data object containing the JPEG data, or nil if there was a problem generating the data. This function may return nil if the image has no data or if the underlying CGImageRef contains data in an unsupported bitmap format.
+    func jpeg(_ quality: JPEGQuality) -> Data? {
+        return self.jpegData(compressionQuality: quality.rawValue)
     }
 }
