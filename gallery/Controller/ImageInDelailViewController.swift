@@ -25,7 +25,7 @@ struct myStr {
     }
 }
 
-class ViewController: UIViewController {
+class ImageInDelailViewController: UIViewController {
     @IBOutlet weak var imageScrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     
@@ -122,7 +122,7 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UIScrollViewDelegate {
+extension ImageInDelailViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         print("1")
         return imageView

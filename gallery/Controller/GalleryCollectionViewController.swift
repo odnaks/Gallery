@@ -49,10 +49,6 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
         lpgr.delegate = self
         self.view.addGestureRecognizer(lpgr)
     }
-
-//    override func viewWillLayoutSubviews() {
-//        super.viewWillLayoutSubviews()
-//    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(false)
