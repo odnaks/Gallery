@@ -9,10 +9,10 @@
 import Foundation
 
 struct ImageInGallery {
-    let id: Int
-    let url: String
-    let width: Int
-    let height: Int
+    let id: Int?
+    let url: String?
+    let width: Int?
+    let height: Int?
     init(id: Int, url: String, width: Int, height: Int) {
         self.id = id
         self.url = url

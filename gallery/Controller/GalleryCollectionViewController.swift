@@ -20,6 +20,7 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             for i in 1...10 {
                 self?.imageService.getPhotos(page: i) { [weak self] images in
@@ -81,12 +82,12 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
         
         let cell = UICollectionViewCell()
         guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? MiniPhotoCell else {return cell}
-        let id = images[indexPath.row].id
+        guard let id = images[indexPath.row].id else {return cell}
         if let imageData = dictIdImage[id] {
             photoCell.photoImageView.image = UIImage(data: imageData!)
         }
         else {
-            let imageLink = images[indexPath.row].url
+            guard let imageLink = images[indexPath.row].url else {return cell}
             photoCell.photoImageView.kf.setImage(with: URL(string: imageLink))
             if let image = photoCell.photoImageView.image {
                 DispatchQueue.global(qos: .background).async { [weak self] in
@@ -125,7 +126,15 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
            print("Could not find index path")
        }
     }
-
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destination = segue.destination as?
+            ImageInDelailViewController, let index =
+            collectionView.indexPathsForSelectedItems?.first {
+            destination.imageinGallery = images[index.row]
+        }
+    }
+    
+    
 }
 
 extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
@@ -136,7 +145,6 @@ extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: widthCell, height: widthCell)
     }
 }
-
 
 //    func resize(_ image: UIImage) -> UIImage {
 //        var actualHeight = Float(image.size.height)
