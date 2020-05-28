@@ -72,7 +72,7 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
         guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? MiniPhotoCell else {return cell}
         photoCell.photoImageView.image = UIImage(named: "graph")
 //        photoCell.frame = CGRect(x: photoCell.frame.origin.x, y: photoCell.frame.origin.y, width: 80, height: 80)
-
+        photoCell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0)
         print("cell")
         return photoCell
     }
@@ -80,27 +80,30 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
    @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
 //    print("state:")
 //    print(gestureRecognizer.state.rawValue)
-    if gestureRecognizer.state != UIGestureRecognizer.State.began {
-           return
-       }
+    guard gestureRecognizer.state == UIGestureRecognizer.State.began else { return }
 
     let p = gestureRecognizer.location(in: self.collectionView)
     let indexPath = self.collectionView.indexPathForItem(at: p)
 
        if let index = indexPath {
-        var cell = self.collectionView.cellForItem(at: index)
-           // do stuff with your cell, for example print the indexPath
+        let cell = self.collectionView.cellForItem(at: index) as! MiniPhotoCell
+        cell.cape.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.3)
+//        collectionView.reloadItems(at: [index])
             print(index.row)
+            let alert = UIAlertController(title: "Удалить", message: "Вы уверены, что хотите удалить фотографию?", preferredStyle: .alert)
+
+            alert.addAction(UIAlertAction(title: "Да", style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: "Нет", style: .destructive, handler:
+                { [index, weak collectionView] action in
+                collectionView?.reloadItems(at: [index])
+            }))
+
+            self.present(alert, animated: true)
+        
        } else {
            print("Could not find index path")
        }
 
-    let alert = UIAlertController(title: "Удалить", message: "Вы уверены, что хотите удалить фотографию?", preferredStyle: .alert)
-
-    alert.addAction(UIAlertAction(title: "Да", style: .default, handler: nil))
-    alert.addAction(UIAlertAction(title: "Нет", style: .destructive, handler: nil))
-
-    self.present(alert, animated: true)
     
     }
     

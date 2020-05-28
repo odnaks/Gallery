@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ted-e8-adO">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ted-e8-adO">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
@@ -15,7 +15,7 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="47y-6a-FPa">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="OZf-SU-0Ge">
                             <size key="itemSize" width="128" height="128"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -33,16 +33,25 @@
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9Vr-Qc-Y5A">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
                                         </imageView>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I0N-od-jGd">
+                                            <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                        </view>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="9Vr-Qc-Y5A" secondAttribute="trailing" id="2Tg-5h-uPN"/>
+                                        <constraint firstAttribute="bottom" secondItem="I0N-od-jGd" secondAttribute="bottom" id="Aq6-HL-PQU"/>
+                                        <constraint firstItem="I0N-od-jGd" firstAttribute="top" secondItem="Td2-GY-hZ8" secondAttribute="top" id="Jqe-5F-qov"/>
+                                        <constraint firstAttribute="trailing" secondItem="I0N-od-jGd" secondAttribute="trailing" id="OFR-RN-Dit"/>
                                         <constraint firstItem="9Vr-Qc-Y5A" firstAttribute="top" secondItem="Td2-GY-hZ8" secondAttribute="top" id="c8o-MX-Zph"/>
+                                        <constraint firstItem="I0N-od-jGd" firstAttribute="leading" secondItem="Td2-GY-hZ8" secondAttribute="leading" id="jFw-vo-w0R"/>
                                         <constraint firstItem="9Vr-Qc-Y5A" firstAttribute="leading" secondItem="Td2-GY-hZ8" secondAttribute="leading" id="ku8-xT-0aZ"/>
                                         <constraint firstAttribute="bottom" secondItem="9Vr-Qc-Y5A" secondAttribute="bottom" id="oOI-s6-Kg0"/>
                                     </constraints>
                                 </collectionViewCellContentView>
                                 <size key="customSize" width="128" height="128"/>
                                 <connections>
+                                    <outlet property="cape" destination="I0N-od-jGd" id="KbJ-xb-jJE"/>
                                     <outlet property="photoImageView" destination="9Vr-Qc-Y5A" id="jCC-Vd-1rh"/>
                                     <segue destination="BYZ-38-t0r" kind="show" id="0Cf-mf-v4j"/>
                                 </connections>
@@ -83,7 +92,7 @@
                                 </constraints>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" cocoaTouchSystemColor="darkTextColor"/>
                         <constraints>
                             <constraint firstItem="6Kx-YH-Y2A" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="clU-q8-4qn"/>
