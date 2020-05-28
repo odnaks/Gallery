@@ -9,11 +9,20 @@
 import UIKit
 
 private let reuseIdentifier = "Cell"
+private let inserts: CGFloat = 2
+private let countPhotoInRow: Int = 4
 
 class GalleryCollectionViewController: UICollectionViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumInteritemSpacing = inserts
+        layout.minimumLineSpacing = inserts * 2
+        collectionView.collectionViewLayout = layout
     }
 
     override func viewWillLayoutSubviews() {
@@ -49,7 +58,7 @@ class GalleryCollectionViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 20
+        return 100
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -59,6 +68,7 @@ class GalleryCollectionViewController: UICollectionViewController {
         guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? MiniPhotoCell else {return cell}
         photoCell.photoImageView.image = UIImage(named: "graph")
 //        photoCell.frame = CGRect(x: photoCell.frame.origin.x, y: photoCell.frame.origin.y, width: 80, height: 80)
+
         print("cell")
         return photoCell
     }
@@ -99,7 +109,10 @@ class GalleryCollectionViewController: UICollectionViewController {
 extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-         return CGSize(width: 80, height: 80)
+        let widthView = Int(collectionView.frame.width)
+        let widthCell = widthView / countPhotoInRow - Int(inserts) * 2
+        
+        return CGSize(width: widthCell, height: widthCell)
     }
     
 //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
