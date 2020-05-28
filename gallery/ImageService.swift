@@ -16,7 +16,7 @@ class ImageService {
                     let path = "/list"
                     let parameters: Parameters = [
                         "page": String(page),
-                        "limit": "20"
+                        "limit": "10"
                     ]
                     let url = baseUrl+path
                     AF.request(url, method: .get, parameters: parameters).responseJSON { repsonse in
@@ -25,11 +25,11 @@ class ImageService {
                                 let json = JSON(data)
                                 var images:[ImageInGallery] = []
                                 for item in json {
-//                                    let id: Int = item.1["id"].intValue
+                                    let id: Int = item.1["id"].intValue
                                     let url: String = item.1["download_url"].stringValue
                                     let he: Int = item.1["height"].intValue
                                     let wi: Int = item.1["width"].intValue
-                                    images.append(ImageInGallery(url: url, width: wi, height: he))
+                                    images.append(ImageInGallery(id: id, url: url, width: wi, height: he))
                                     
                                 }
                                 completion(images)
