@@ -83,6 +83,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        
         getPhotos{ [weak self] urls in
             print(urls[0])
             let url = urls[0].url

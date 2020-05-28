@@ -12,7 +12,7 @@ private let reuseIdentifier = "Cell"
 private let inserts: CGFloat = 2
 private let countPhotoInRow: Int = 4
 
-class GalleryCollectionViewController: UICollectionViewController {
+class GalleryCollectionViewController: UICollectionViewController, UIGestureRecognizerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +23,23 @@ class GalleryCollectionViewController: UICollectionViewController {
         layout.minimumInteritemSpacing = inserts
         layout.minimumLineSpacing = inserts * 2
         collectionView.collectionViewLayout = layout
+        
+        
+        let lpgr = UILongPressGestureRecognizer(target: self,
+                                    action:#selector(self.handleLongPress))
+        lpgr.minimumPressDuration = 1
+        lpgr.delaysTouchesBegan = true
+        lpgr.delegate = self
+        self.view.addGestureRecognizer(lpgr)
     }
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-//        collectionView.collectionViewLayout.invalidateLayout()
+//    override func viewWillLayoutSubviews() {
+//        super.viewWillLayoutSubviews()
+//    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(false)
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     // MARK: - Helpers
@@ -36,14 +48,6 @@ class GalleryCollectionViewController: UICollectionViewController {
         var width = collectionView.frame.width
         let contentInset = collectionView.contentInset
         width = width - contentInset.left - contentInset.right
-
-        // Uncomment the following two lines if you're adjusting section insets
-        // let sectionInset = self.collectionView(collectionView, layout: collectionView.collectionViewLayout, insetForSectionAt: section)
-        // width = width - sectionInset.left - sectionInset.right
-
-        // Uncomment if you are using the sectionInset property on flow layouts
-        // let sectionInset = (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.sectionInset ?? UIEdgeInsets.zero
-        // width = width - sectionInset.left - sectionInset.right
 
         return width
     }
@@ -72,38 +76,35 @@ class GalleryCollectionViewController: UICollectionViewController {
         print("cell")
         return photoCell
     }
+    
+   @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
+//    print("state:")
+//    print(gestureRecognizer.state.rawValue)
+    if gestureRecognizer.state != UIGestureRecognizer.State.began {
+           return
+       }
 
-    // MARK: UICollectionViewDelegate
+    let p = gestureRecognizer.location(in: self.collectionView)
+    let indexPath = self.collectionView.indexPathForItem(at: p)
 
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
+       if let index = indexPath {
+        var cell = self.collectionView.cellForItem(at: index)
+           // do stuff with your cell, for example print the indexPath
+            print(index.row)
+       } else {
+           print("Could not find index path")
+       }
 
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
+    let alert = UIAlertController(title: "Удалить", message: "Вы уверены, что хотите удалить фотографию?", preferredStyle: .alert)
 
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
+    alert.addAction(UIAlertAction(title: "Да", style: .default, handler: nil))
+    alert.addAction(UIAlertAction(title: "Нет", style: .destructive, handler: nil))
 
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
+    self.present(alert, animated: true)
     
     }
-    */
-
+    
+    
 }
 
 extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
@@ -114,9 +115,4 @@ extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
         
         return CGSize(width: widthCell, height: widthCell)
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: calculateCellWidth(for: collectionView, section: indexPath.section), height: 60)
-//    }
-
 }
