@@ -14,8 +14,16 @@ private let countPhotoInRow: Int = 4
 
 class GalleryCollectionViewController: UICollectionViewController, UIGestureRecognizerDelegate {
 
+    let imageService = ImageService()
+    var images = [ImageInGallery]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        imageService.getPhotos { [weak self] images in
+            self?.images = images
+            self?.collectionView.reloadData()
+        }
+        
         navigationController?.setNavigationBarHidden(true, animated: false)
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -62,7 +70,7 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 100
+        return images.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -70,7 +78,9 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
         let cell = UICollectionViewCell()
         
         guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? MiniPhotoCell else {return cell}
-        photoCell.photoImageView.image = UIImage(named: "graph")
+        let imageLink = images[indexPath.row].url
+        photoCell.photoImageView.kf.setImage(with: URL(string: imageLink))
+//        cell.imagePhotoView.kf.setImage(with: URL(string: contentPhotoLink))
 //        photoCell.frame = CGRect(x: photoCell.frame.origin.x, y: photoCell.frame.origin.y, width: 80, height: 80)
         photoCell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0)
         print("cell")
@@ -87,7 +97,7 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
 
        if let index = indexPath {
         let cell = self.collectionView.cellForItem(at: index) as! MiniPhotoCell
-        cell.cape.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.3)
+        cell.cape.backgroundColor = UIColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 0.3)
 //        collectionView.reloadItems(at: [index])
             print(index.row)
             let alert = UIAlertController(title: "Удалить", message: "Вы уверены, что хотите удалить фотографию?", preferredStyle: .alert)
