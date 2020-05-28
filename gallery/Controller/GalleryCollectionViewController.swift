@@ -20,34 +20,18 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        for i in 1...5 {
-            DispatchQueue.global().async { [weak self] in
-                for i in 1...10 {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            for i in 1...10 {
                 self?.imageService.getPhotos(page: i) { [weak self] images in
                     self?.images += images
                     DispatchQueue.main.async {
                         self?.collectionView.reloadData()
                     }
                 }
-                }
             }
-//        }
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumInteritemSpacing = inserts
-        layout.minimumLineSpacing = inserts * 2
-        collectionView.collectionViewLayout = layout
-        
-        
-        let lpgr = UILongPressGestureRecognizer(target: self,
-                                    action:#selector(self.handleLongPress))
-        lpgr.minimumPressDuration = 1
-        lpgr.delaysTouchesBegan = true
-        lpgr.delegate = self
-        self.view.addGestureRecognizer(lpgr)
+        }
+        setupView()
+        setupGestureRecognizer()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -57,6 +41,24 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
     
     // MARK: - Helpers
 
+    func setupView() {
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumInteritemSpacing = inserts
+        layout.minimumLineSpacing = inserts * 2
+        collectionView.collectionViewLayout = layout
+    }
+    
+    func setupGestureRecognizer() {
+        let lpgr = UILongPressGestureRecognizer(target: self,
+                                    action:#selector(self.handleLongPress))
+        lpgr.minimumPressDuration = 1
+        lpgr.delaysTouchesBegan = true
+        lpgr.delegate = self
+        self.view.addGestureRecognizer(lpgr)
+    }
+    
     func calculateCellWidth(for collectionView: UICollectionView, section: Int) -> CGFloat {
         var width = collectionView.frame.width
         let contentInset = collectionView.contentInset
@@ -68,27 +70,22 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
-
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
         return images.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = UICollectionViewCell()
-        
         guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? MiniPhotoCell else {return cell}
         let id = images[indexPath.row].id
         if let imageData = dictIdImage[id] {
             photoCell.photoImageView.image = UIImage(data: imageData!)
         }
         else {
-            print("new key", id)
             let imageLink = images[indexPath.row].url
             photoCell.photoImageView.kf.setImage(with: URL(string: imageLink))
             if let image = photoCell.photoImageView.image {
@@ -97,30 +94,24 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
                     self?.dictIdImage[id] = imageData
                 }
             }
-
         }
-
         photoCell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0)
-        print(indexPath.row)
         return photoCell
     }
     
    @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
-//    print("state:")
-//    print(gestureRecognizer.state.rawValue)
     guard gestureRecognizer.state == UIGestureRecognizer.State.began else { return }
 
-    let p = gestureRecognizer.location(in: self.collectionView)
-    let indexPath = self.collectionView.indexPathForItem(at: p)
+    let point = gestureRecognizer.location(in: self.collectionView)
+    let indexPath = self.collectionView.indexPathForItem(at: point)
 
        if let index = indexPath {
         let cell = self.collectionView.cellForItem(at: index) as! MiniPhotoCell
         cell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0.4)
-            print(index.row)
             let alert = UIAlertController(title: "Удалить", message: "Вы уверены, что хотите удалить фотографию?", preferredStyle: .alert)
 
-            alert.addAction(UIAlertAction(title: "Да", style: .default, handler:
-                { [index, weak collectionView, weak self] action in
+            alert.addAction(UIAlertAction(title: "Да", style: .default, handler:{
+                [index, weak collectionView, weak self] action in
                     self?.images.remove(at: index.row)
                     collectionView?.reloadData()
                 }
@@ -129,21 +120,15 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
                 { [index, weak collectionView] action in
                 collectionView?.reloadItems(at: [index])
             }))
-
             self.present(alert, animated: true)
-        
        } else {
            print("Could not find index path")
        }
-
-    
     }
-    
-    
+
 }
 
 extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
-
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let widthView = Int(collectionView.frame.width)
         let widthCell = widthView / countPhotoInRow - Int(inserts) * 2
@@ -188,3 +173,4 @@ extension GalleryCollectionViewController: UICollectionViewDelegateFlowLayout {
 //        UIGraphicsEndImageContext()
 //        return UIImage(data: imageData!) ?? UIImage()
 //    }
+//
