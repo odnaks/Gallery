@@ -11,18 +11,18 @@ import UIKit
 private let reuseIdentifier = "Cell"
 private let inserts: CGFloat = 2
 private let countPhotoInRow: Int = 3
+private let countPages: Int = 5
 
 class GalleryCollectionViewController: UICollectionViewController, UIGestureRecognizerDelegate {
-
+    
     let imageService = ImageService()
     var images = [ImageInGallery]()
-    var dictIdImage = [Int: Data?]()
+    var dictIdImage = [Int: Data?]() // for caching
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            for i in 1...10 {
+            for i in 1...countPages {
                 self?.imageService.getPhotos(page: i) { [weak self] images in
                     self?.images += images
                     DispatchQueue.main.async {
@@ -41,7 +41,7 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
     }
     
     // MARK: - Helpers
-
+    
     func setupView() {
         navigationController?.setNavigationBarHidden(true, animated: false)
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -53,27 +53,19 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
     
     func setupGestureRecognizer() {
         let lpgr = UILongPressGestureRecognizer(target: self,
-                                    action:#selector(self.handleLongPress))
+                                                action:#selector(self.handleLongPress))
         lpgr.minimumPressDuration = 1
         lpgr.delaysTouchesBegan = true
         lpgr.delegate = self
         self.view.addGestureRecognizer(lpgr)
     }
     
-    func calculateCellWidth(for collectionView: UICollectionView, section: Int) -> CGFloat {
-        var width = collectionView.frame.width
-        let contentInset = collectionView.contentInset
-        width = width - contentInset.left - contentInset.right
-
-        return width
-    }
-
     // MARK: UICollectionViewDataSource
-
+    
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return images.count
     }
@@ -100,31 +92,33 @@ class GalleryCollectionViewController: UICollectionViewController, UIGestureReco
         return photoCell
     }
     
-   @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
-    guard gestureRecognizer.state == UIGestureRecognizer.State.began else { return }
-
-    let point = gestureRecognizer.location(in: self.collectionView)
-    let indexPath = self.collectionView.indexPathForItem(at: point)
-
-       if let index = indexPath {
-        let cell = self.collectionView.cellForItem(at: index) as! MiniPhotoCell
-        cell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0.4)
+    // MARK: Pressure handling
+    
+    @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
+        guard gestureRecognizer.state == UIGestureRecognizer.State.began else { return }
+        
+        let point = gestureRecognizer.location(in: self.collectionView)
+        let indexPath = self.collectionView.indexPathForItem(at: point)
+        
+        if let index = indexPath {
+            let cell = self.collectionView.cellForItem(at: index) as! MiniPhotoCell
+            cell.cape.backgroundColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0.4)
             let alert = UIAlertController(title: "Удалить", message: "Вы уверены, что хотите удалить фотографию?", preferredStyle: .alert)
-
+            
             alert.addAction(UIAlertAction(title: "Да", style: .default, handler:{
                 [index, weak collectionView, weak self] action in
-                    self?.images.remove(at: index.row)
-                    collectionView?.reloadData()
+                self?.images.remove(at: index.row)
+                collectionView?.reloadData()
                 }
             ))
             alert.addAction(UIAlertAction(title: "Нет", style: .destructive, handler:
                 { [index, weak collectionView] action in
-                collectionView?.reloadItems(at: [index])
+                    collectionView?.reloadItems(at: [index])
             }))
             self.present(alert, animated: true)
-       } else {
-           print("Could not find index path")
-       }
+        } else {
+            print("Could not find index path")
+        }
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as?

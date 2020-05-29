@@ -11,5 +11,4 @@ import UIKit
 class MiniPhotoCell: UICollectionViewCell {
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var cape: UIView!
-    
 }

@@ -71,8 +71,6 @@
 			isa = PBXGroup;
 			children = (
 				B8C36128247FAB9300C16008 /* MiniPhotoCell.swift */,
-				B8227970247E7F6E004F9756 /* Main.storyboard */,
-				B8227975247E7F6F004F9756 /* LaunchScreen.storyboard */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -122,6 +120,8 @@
 				5E8F6D512480264E00622659 /* View */,
 				5E8F6D502480260E00622659 /* Controller */,
 				B8227973247E7F6F004F9756 /* Assets.xcassets */,
+				B8227975247E7F6F004F9756 /* LaunchScreen.storyboard */,
+				B8227970247E7F6E004F9756 /* Main.storyboard */,
 				B8227978247E7F6F004F9756 /* Info.plist */,
 			);
 			path = gallery;
