@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    // MARK: UISceneSession Lifecycle
+    // MARK: UISceneSession Lifecyclega
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         // Called when a new scene session is being created.
